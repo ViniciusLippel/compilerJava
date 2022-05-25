@@ -72,7 +72,7 @@ const   = 0 | [1-9][0-9]*
 "if"		{return symbol ("if", IF);}
 "else"      {return symbol ("else", ELSE);}
 "return"	{return symbol ("return", RETURN);}
-"def"       {return symbol ("def", DEF);}
+"def"       {return symbol ("def", FUNC);}
 {bool_literal}   { return symbol("bool",BOOL, new Boolean(Boolean.parseBoolean(yytext()))); }
 {id_}        {return symbol ("id", ID_, yytext());}
 {const}     {return symbol ("const", CONST, new Integer(Integer.parseInt(yytext())));}

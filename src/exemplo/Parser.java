@@ -153,9 +153,13 @@ public class Parser extends java_cup.runtime.lr_parser {
         String strErro = "Erro de sintaxe. Linha: " + (s.right + 1) +
             " Coluna: " + s.left + ". Texto: \"" + s.value + "\"" + " \n Token Encontrado: " + sym.terminalNames[s.sym] + " state " + s.parse_state;
         
-        report_error(strErro, null); 
-        
+        report_error(strErro, null);
     }
+    
+//    public String return_syntax_error(){
+//        return this.syntax_error()
+//    }
+    
     public void semantico(Object tk){
        System.out.println("Semântico....");
     }

@@ -23,24 +23,68 @@ parser code
     
 :};
 
-terminal ID_, WS, CHAR, INT, STR, BOOL, CONST, IF, ELSE, DEF, RETURN, COMMA, SEMICOLON, SUM, SUB, MULT, DIV, ATT, EQ, NOTEQ, MORET, LESST, MOREEQ, LESSEQ, NOT, AND, OR, LPAREM, RPAREM, LBRACE, RBRACE;
+terminal ID_, WS, CHAR, INT, STR, BOOL, CONST, IF, ELSE, FUNC, RETURN, COMMA, SEMICOLON, SUM, SUB, MULT, DIV, ATT, EQ, NOTEQ, MORET, LESST, MOREEQ, LESSEQ, NOT, AND, OR, LPAREM, RPAREM, LBRACE, RBRACE;
 
 
-non terminal command, comm_list, if, def, var_list, return, atrib, exp, value, value_exp, comp, operator, comparator;
+non terminal Command command;
+non terminal ArrayList<Command> comm_list;
+non terminal If if;
+non terminal Function func;
+non terminal ArrayList<Variable> var_list;
+non terminal return;
+non terminal Attribution att;
+non terminal Expression exp;
+non terminal Value value;
+non terminal Comparison comp;
+non terminal operator;
+non terminal comparator;
 
-comm_list ::= command SEMICOLON comm_list | command SEMICOLON;
-command ::= atrib | if | def;
-if ::= IF LPAREM comp RPAREM LBRACE comm_list RBRACE;
-// TODO: def no flex; colocar comma no flex; colocar def no command;
-var_list ::= ID_ COMMA var_list | ID_;
-def::= DEF ID_ LPAREM var_list RPAREM LBRACE comm_list RBRACE;
-return::= return value;
-atrib ::= ID_ ATT value_exp;
-exp ::= value operator value;
-value ::= CONST | ID_;
-value_exp ::= exp | value;
-comp ::= value comparator value;
-operator ::= SUM | SUB | MULT | DIV;
-comparator ::= EQ | NOTEQ | MORET | LESST | MOREEQ | LESSEQ;
+
+comm_list ::= command:cm SEMICOLON comm_list:cl {: cl.add(cm); RESULT = cl; :} 
+        | command:cm2 SEMICOLON                 {: ArrayList<Command> lst = new ArrayList<Command>(); lst.add(cm2); RESULT = lst; :}
+        ;
+
+command ::= att:at {: RESULT = new Command(at); :}
+        | if:i {: RESULT = new Command(i); :}
+        | func:f {: RESULT = new Command(f); :}
+        ;
+
+if ::= IF LPAREM comp:cp RPAREM LBRACE comm_list:cl RBRACE {: RESULT = new If(cp, cl) :};
+
+var_list ::= ID_:id COMMA var_list:vl {: vl.add(id); RESULT = vl; :}
+        | ID_:id1 {: ArrayList<Variable> vlst = new ArrayList<Variable>(); vlst.add(id1); RESULT = vlst; :}
+        ;
+
+func::= FUNC ID_:id LPAREM var_list:vl RPAREM LBRACE comm_list:cl RBRACE {: RESULT = new Function(id, vl, cl); :};
+
+return::= return value:v;
+
+att ::= ID_:id ATT exp:e {: RESULT = new Attribution(id, e); :};
+
+exp ::= exp:ep1 operator:op exp:ep2 {: RESULT = new Expression(ep1, op, ep2); :}
+        | value:v3 {: RESULT = new Expression(v3); :}
+        ;
+
+value ::= CONST:c {: RESULT = new Value(new Const(c)); :}
+        | ID_:id {: RESULT = new Value(new Id(id)); :}
+        ;
+
+comp ::= value:v1 comparator:cp value:v2 {: RESULT = new Comparison(v1, cp, v2); :};
+
+operator ::= SUM 
+        | SUB 
+        | MULT 
+        | DIV 
+        ;
+
+comparator ::= EQ 
+        | NOTEQ 
+        | MORET 
+        | LESST 
+        | MOREEQ 
+        | LESSEQ
+        ;
+
+
 
 

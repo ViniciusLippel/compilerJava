@@ -1,0 +1,46 @@
+package arquivos;
+
+import java.io.*;
+import java_cup.runtime.*;
+import exemplo.Lexico;
+
+parser code
+{:
+    // colocar funções que serão geradas no código
+    // exemplo - tratamento de erros sintáticos
+    public void syntax_error(Symbol s){
+        String strErro = "Erro de sintaxe. Linha: " + (s.right + 1) +
+            " Coluna: " + s.left + ". Texto: \"" + s.value + "\"" + " \n Token Encontrado: " + sym.terminalNames[s.sym] + " state " + s.parse_state;
+        
+        report_error(strErro, null); 
+        
+    }
+    public void semantico(Object tk){
+       System.out.println("Semântico....");
+    }
+
+
+    
+:};
+
+terminal ID_, WS, CHAR, INT, STR, BOOL, CONST, IF, ELSE, DEF, RETURN, COMMA, SEMICOLON, SUM, SUB, MULT, DIV, ATT, EQ, NOTEQ, MORET, LESST, MOREEQ, LESSEQ, NOT, AND, OR, LPAREM, RPAREM, LBRACE, RBRACE;
+
+
+non terminal command, comm_list, if, def, var_list, return, atrib, exp, value, value_exp, comp, operator, comparator;
+
+comm_list ::= command SEMICOLON comm_list | command SEMICOLON;
+command ::= atrib | if | def;
+if ::= IF LPAREM comp RPAREM LBRACE comm_list RBRACE;
+// TODO: def no flex; colocar comma no flex; colocar def no command;
+var_list ::= ID_ COMMA var_list | ID_;
+def::= DEF ID_ LPAREM var_list RPAREM LBRACE comm_list RBRACE;
+return::= return value;
+atrib ::= ID_ ATT value_exp;
+exp ::= value operator value;
+value ::= CONST | ID_;
+value_exp ::= exp | value;
+comp ::= value comparator value;
+operator ::= SUM | SUB | MULT | DIV;
+comparator ::= EQ | NOTEQ | MORET | LESST | MOREEQ | LESSEQ;
+
+
